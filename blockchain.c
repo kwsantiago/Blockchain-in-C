@@ -9,9 +9,19 @@ struct block{
     struct block *link;
 }*head;
 
+void addBlock(int data);
+void verifyChain();
+void alterNthBlock(int n, int newData);
+void attackChain();
+int hashCompare(unsigned char*, unsigned char*);
+void hashPrinter(unsigned char hash[], int length){
+unsigned char* toString(struct block);
+void printBlock(struct block *b){
+void printAllBlocks();
+
 void addBlock(int data){
     if(head == NULL){
-        head = malloc(sizeof(struct block))
+        head = malloc(sizeof(struct block));
         SHA256("", sizeof(""), head->prevHash);
         head->blockData = data;
         return;
@@ -91,6 +101,79 @@ void attackChain(){
     }
 }
 
-int main(){
-    return 0;
+unsigned char* toString(struct block b){
+    unsigned char *str = malloc(sizeof(unsigned char)*sizeof(b));
+    memcpy(str, &b, sizeof(b));
+    return str;
+}
+
+void hashPrinter(unsigned char hash[], int length){
+    for(int i = 0; i < length; i++)
+        printf("%02x", hash[i]);
+}
+
+int hashCompare(unsigned char &str1, unsigned char *str2){
+    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+        if(str1[i] != str2[i])
+            return 0;
+    return 1;
+}
+
+void printBlock(struct block *b){
+    printf("%p]t", b);
+    hashPrinter(b->prevHash, sizeof(b->prevHash));
+    printf("\t[%d]\t", b->blockData);
+    printf("%p\n", b->link);
+}
+
+void printAllBlocks(){
+    struct block *curr = head;
+    int count = 0;
+    while(curr){
+        printBlock(curr);
+        curr = curr->next;
+    }
+}
+
+void main(){
+    int choice, n , r;
+    printf("1: Add Block\n2: Add n random blocks\n3: Alter Nth block\n4: Print all blocks\n5: Verify Chain\n6: Attack Chain");
+    while(1){
+        printf("> ");
+        scanf("%d", &choice);
+        switch(choice){
+            case 1: 
+                printf("Enter data: ");
+                scanf("%d", &n);
+                break;
+            case 2:
+                printf("Amount of blocks to add: ");
+                scanf("%d", choice);
+                for(int i = 0; i < n; i++){
+                    r = rand() % (n * 10);
+                    printf("Entering: %d", r);
+                    addBlock(r);
+                }
+                break;
+            case 3:
+                printf("Block to alter: ");
+                scanf("%d", &n);
+                printf("Enter value: ");
+                scanf("%d", &r);
+                alterNthBlock(n, r);
+                break;
+            case 4:
+                printAllBlocks();
+                break;
+            case 5:
+                verifyChain();
+                break;
+            case 6:
+                attackChain();
+                break;
+            default:
+                printf("Pick something!");
+                break;
+        }
+    }
 }
