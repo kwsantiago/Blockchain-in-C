@@ -1,4 +1,7 @@
 from block import Block
 
-b1 = Block.create_genesis_block()
-print(b1.hash)
+blockchain = [Block.create_genesis_block()]
+
+print("The Genesis Block has been created!")
+print("Hash: %s" % blockchain[-1].hash)
+
