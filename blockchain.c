@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <openssl/crypto.h>
 
 struct block{
@@ -49,6 +50,44 @@ void alterNthBlock(int n, int newData){
     struct block *curr = head;
     if(curr == NULL){
         printf("%n block does not exist.\n", n);
+        return;
+    }
+
+    while(count != n){
+        if(curr->link == NULL && count != n){
+            printf("%n block does not exist.\n", n);
+            return;
+        }
+        else if(count == n)
+            break;
+        curr = curr->link;
+        count++;
+    }
+    printf("Before: ");
+    curr->blockData = newData;
+    printf("After: ");
+        printBlock(curr);
+    printf("\n");
+}
+
+void attackChain(){
+    struct block *curr = head, *prev = NULL;
+    if(curr == NULL){
+        printf("Blockchain is empty! Try again after adding blocks");
+        return;
+    }
+    while(1){
+        prev = curr;
+        curr = curr->link;
+        if(curr == NULL)
+            return;
+        if(!hashCompare(SHA256(toString(*prev), sizeof(*prev), NULL), curr->prevHash)){
+            hashPrinter(
+                    SHA256(toString(*prev), curr->prevHash),
+                    SHA256_DIGEST_LENGTH
+            );
+            printf("\n");
+        }
     }
 }
 
