@@ -52,7 +52,6 @@ class Blockchain(object):
         pass
     
     def proof_of_work(self, last_proof):
-
     proof = 0
     while self.valid_proof(last_proof, proof) is False:
         proof += 1
@@ -60,7 +59,35 @@ class Blockchain(object):
 
     @staticmethod
     def valid_proof(last_proof, proof):
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
+
+    # Initiate a node
+    app = Flask(__name__)
     
-    guess = f'{last_proof}{proof}'.encode()
-    guess_hash = hashlib.sha256(guess).hexdigest()
-    return guess_hash[:4] == "0000"
+    # Generate globally unique for node
+    node_identifier = str(uuid4().replace('-', ''))
+    
+    # Start the blockchain
+    blockchain = Blockchain()
+
+    @app.route('/mine', methods=['GET'])
+    def mine():
+        return "We'll mine a new Block"
+      
+    @app.route('/transactions/new', methods=['POST'])
+    def new_transaction():
+        return "We'll add a new transaction"
+
+    @app.route('/chain', methods=['GET'])
+    def full_chain():
+        response = {
+            'chain': blockchain.chain,
+            'length': len(blockchain.chain),
+        }
+        return jsonify(response), 200
+
+    if __name__ == '__main__':
+        app.run(host='0.0.0.0', port=5000)
+                                                        
